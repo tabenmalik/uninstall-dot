@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uninstall-dot"
+version = "0.1.0"
+authors = [
+    { name="Taben Malik", email="tabenjmalik@gmail.com" },
+]
+description = "Uninstall ."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/tabenmalik/uninstall-dot"
+Issues = "https://github.com/tabenmalik/uninstall-dot/issues"
+
+[project.scripts]
+uninstall-dot = "uninstall_dot._main:_main"
