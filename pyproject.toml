@@ -24,3 +24,41 @@ Issues = "https://github.com/tabenmalik/uninstall-dot/issues"
 
 [project.scripts]
 uninstall-dot = "uninstall_dot._main:_main"
+
+[tool.coverage]
+paths.source = [
+    "src",
+    ".tox*/*/lib/python*/site-packages",
+    ".tox*/pypy*/site-packages",
+    ".tox*\\*\\Lib\\site-packages",
+    "*/src",
+    "*\\src",
+]
+
+[tool.coverage.run]
+relative_files = true
+plugins = ["covdefaults"]
+
+[tool.tox]
+env_list = ["3.11", "3.12", "3.13", "3.14", "coverage"]
+
+[tool.tox.env_run_base]
+description = "Run test under {base_python}"
+deps = ["pytest", "coverage[toml]", "covdefaults"]
+set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
+commands = [
+    ["coverage", "erase"],
+    ["coverage", "run", "--source", "{envsitepackagesdir}{/}uninstall_dot", "--module", "pytest", {replace="posargs", extend=true}],
+]
+
+[tool.tox.env.coverage]
+description = "Compile and report coverage"
+deps = ["coverage[toml]", "covdefaults"]
+depends = ["3.11", "3.12", "3.13", "3.14"]
+skip_intsall = true
+set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage}" }
+commands = [
+    ["coverage", "erase"],
+    ["coverage", "combine", "--keep"],
+    ["coverage", "report"],
+]
