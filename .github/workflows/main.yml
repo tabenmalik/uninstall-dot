@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
       - name: install dev tools
         run: pip install --upgrade tox virtualenv setuptools pip
       - name: set env
@@ -42,6 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: pip
       - name: install coverage
         run: pip install --upgrade tox virtualenv setuptools pip
       - uses: actions/download-artifact@v7
