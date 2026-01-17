@@ -4,8 +4,16 @@ import os
 import sys
 import tomllib
 from os import PathLike
-from os import execvp
 from pathlib import Path
+
+if sys.platform == "win32":  # pragma: win32 cover
+    import subprocess
+
+    def execvp(file: str, args: list[str], /) -> int:
+        return subprocess.run(args).returncode
+
+else:  # pragma: win32 no cover
+    from os import execvp
 
 
 def _looks_like_path(name: str) -> bool:
@@ -33,4 +41,4 @@ def _main():
             if package:
                 cmd[-1] = package
 
-    execvp(cmd[0], cmd)
+    return execvp(cmd[0], cmd)
