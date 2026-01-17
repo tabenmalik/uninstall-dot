@@ -26,15 +26,11 @@ def _main() -> NoReturn:
 
     cmd = ["pip", *sys.argv[1:]]
 
-    if (
-        "uninstall" in cmd
-        and _looks_like_path(cmd[-1])
-    ):
+    if "uninstall" in cmd and _looks_like_path(cmd[-1]):
         pyproject = Path(cmd[-1]) / "pyproject.toml"
         if pyproject.exists():
             package = _get_package_name(pyproject)
             if package:
                 cmd[-1] = package
-
 
     execvp(cmd[0], cmd)
