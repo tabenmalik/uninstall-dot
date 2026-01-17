@@ -23,7 +23,10 @@ Homepage = "https://github.com/tabenmalik/uninstall-dot"
 Issues = "https://github.com/tabenmalik/uninstall-dot/issues"
 
 [project.scripts]
-uninstall-dot = "uninstall_dot._main:_main"
+uninstall-dot = "uninstall_dot:_main"
+
+[tool.setuptools]
+py-modules = ["uninstall-dot"]
 
 [tool.coverage]
 paths.source = [
