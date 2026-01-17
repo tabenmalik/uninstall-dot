@@ -27,7 +27,7 @@ uninstall-dot = "uninstall_dot._main:_main"
 
 [tool.coverage]
 paths.source = [
-    "src",
+    ".",
     ".tox*/*/lib/python*/site-packages",
     ".tox*/pypy*/site-packages",
     ".tox*\\*\\Lib\\site-packages",
@@ -48,7 +48,7 @@ deps = ["pytest", "coverage[toml]", "covdefaults"]
 set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
 commands = [
     ["coverage", "erase"],
-    ["coverage", "run", "--source", "{envsitepackagesdir}{/}uninstall_dot", "--module", "pytest", {replace="posargs", extend=true}],
+    ["coverage", "run", "--module", "pytest", {replace="posargs", extend=true}],
 ]
 
 [tool.tox.env.coverage]
