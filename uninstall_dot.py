@@ -2,9 +2,14 @@ from __future__ import annotations
 
 import os
 import sys
-import tomllib
 from os import PathLike
 from pathlib import Path
+
+if sys.version_info >= (3, 11):  # pragma: >=3.11 cover
+    from tomllib import load as toml_load
+else:  # pragma: <3.11 cover
+    from tomli import load as toml_load
+
 
 if sys.platform == "win32":  # pragma: win32 cover
     import subprocess
@@ -26,7 +31,7 @@ def _looks_like_path(name: str) -> bool:
 
 def _get_package_name(pyproject: PathLike) -> str | None:
     with open(pyproject, mode="rb") as fobj:
-        pkg_data = tomllib.load(fobj)
+        pkg_data = toml_load(fobj)
     return pkg_data.get("project", {}).get("name", None)
 
 
