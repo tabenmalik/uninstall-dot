@@ -1,22 +1,26 @@
+from __future__ import annotations
+
 import shutil
 from unittest.mock import MagicMock
-import sys
-import os
 
 import pytest
 
 from uninstall_dot import _main
 
+
 def test_install():
     assert shutil.which("uninstall-dot") is not None
 
 
-@pytest.mark.parametrize("cmd", [
-    ("pip", "uninstall", "numpy"),
-    ("uninstall-dot", "install", "numpy"),
-    ("pip", "help"),
-    ("hello", "freeze", "--all"),
-])
+@pytest.mark.parametrize(
+    "cmd",
+    [
+        ("pip", "uninstall", "numpy"),
+        ("uninstall-dot", "install", "numpy"),
+        ("pip", "help"),
+        ("hello", "freeze", "--all"),
+    ],
+)
 def test_passthrough(monkeypatch, cmd):
     mock_exec = MagicMock()
     monkeypatch.setattr(_main.sys, "argv", cmd)
@@ -49,11 +53,11 @@ def test_uninstall_with_toml(monkeypatch, tmp_path):
     with open(tmp_path / "pyproject.toml", mode="wb") as fobj:
         fobj.write(
             b"[build-system]\n"
-            b"requires = [\"setuptools>=61.0\"]\n"
-            b"build-backend = \"setuptools.build_meta\"\n"
+            b'requires = ["setuptools>=61.0"]\n'
+            b'build-backend = "setuptools.build_meta"\n'
             b"\n"
             b"[project]\n"
-            b"name = \"fizzbuzz\"\n"
+            b'name = "fizzbuzz"\n'
         )
 
     _main._main()

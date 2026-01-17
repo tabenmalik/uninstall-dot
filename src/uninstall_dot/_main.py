@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 import sys
-from typing import NoReturn
+import tomllib
+from os import PathLike
 from os import execvp
 from pathlib import Path
-import os
-import tomllib
+from typing import NoReturn
+
 
 def _looks_like_path(name: str) -> bool:
     return (
@@ -25,15 +27,11 @@ def _main() -> NoReturn:
 
     cmd = ["pip", *sys.argv[1:]]
 
-    if (
-        "uninstall" in cmd
-        and _looks_like_path(cmd[-1])
-    ):
+    if "uninstall" in cmd and _looks_like_path(cmd[-1]):
         pyproject = Path(cmd[-1]) / "pyproject.toml"
         if pyproject.exists():
             package = _get_package_name(pyproject)
             if package:
                 cmd[-1] = package
-
 
     execvp(cmd[0], cmd)
