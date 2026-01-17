@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os
 import shutil
-import sys
 from unittest.mock import MagicMock
 
 import pytest

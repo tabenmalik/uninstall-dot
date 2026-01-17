@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import tomllib
+from os import PathLike
 from os import execvp
 from pathlib import Path
 from typing import NoReturn
