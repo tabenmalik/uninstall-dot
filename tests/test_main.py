@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from uninstall_dot import _main
+import uninstall_dot
 
 
 def test_install():
@@ -23,9 +23,9 @@ def test_install():
 )
 def test_passthrough(monkeypatch, cmd):
     mock_exec = MagicMock()
-    monkeypatch.setattr(_main.sys, "argv", cmd)
-    monkeypatch.setattr(_main, "execvp", mock_exec)
-    _main._main()
+    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
+    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
+    uninstall_dot._main()
     assert mock_exec.called
     assert mock_exec.call_args == (("pip", ["pip", *cmd[1:]]),)
 
@@ -34,11 +34,11 @@ def test_uninstall_no_toml(monkeypatch, tmp_path):
     # directory path doesn't get converted to project name without a pyproject.toml
     cmd = ["uninstall-dot", "uninstall", "."]
     mock_exec = MagicMock()
-    monkeypatch.setattr(_main.sys, "argv", cmd)
-    monkeypatch.setattr(_main, "execvp", mock_exec)
+    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
+    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
     monkeypatch.chdir(tmp_path)
 
-    _main._main()
+    uninstall_dot._main()
     assert mock_exec.called
     assert mock_exec.call_args == (("pip", ["pip", "uninstall", "."]),)
 
@@ -47,8 +47,8 @@ def test_uninstall_with_toml(monkeypatch, tmp_path):
     # look up project name in pyproject.toml
     cmd = ["uninstall-dot", "uninstall", str(tmp_path)]
     mock_exec = MagicMock()
-    monkeypatch.setattr(_main.sys, "argv", cmd)
-    monkeypatch.setattr(_main, "execvp", mock_exec)
+    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
+    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
 
     with open(tmp_path / "pyproject.toml", mode="wb") as fobj:
         fobj.write(
@@ -60,6 +60,6 @@ def test_uninstall_with_toml(monkeypatch, tmp_path):
             b'name = "fizzbuzz"\n'
         )
 
-    _main._main()
+    uninstall_dot._main()
     assert mock_exec.called
     assert mock_exec.call_args == (("pip", ["pip", "uninstall", "fizzbuzz"]),)
