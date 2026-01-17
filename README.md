@@ -8,4 +8,3 @@ Uninstall .
 pip install uninstall-dot
 alias pip=uninstall-dot
 ```
-
