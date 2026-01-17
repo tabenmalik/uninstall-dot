@@ -1,11 +1,14 @@
-import shutil
-from unittest.mock import MagicMock
-import sys
+from __future__ import annotations
+
 import os
+import shutil
+import sys
+from unittest.mock import MagicMock
 
 import pytest
 
 from uninstall_dot import _main
+
 
 def test_install():
     assert shutil.which("uninstall-dot") is not None

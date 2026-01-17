@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import os
 import sys
-from typing import NoReturn
+import tomllib
 from os import execvp
 from pathlib import Path
-import os
-import tomllib
+from typing import NoReturn
+
 
 def _looks_like_path(name: str) -> bool:
     return (
