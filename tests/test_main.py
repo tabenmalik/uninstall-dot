@@ -63,3 +63,22 @@ def test_uninstall_with_toml(monkeypatch, tmp_path):
     uninstall_dot._main()
     assert mock_exec.called
     assert mock_exec.call_args == (("pip", ["pip", "uninstall", "fizzbuzz"]),)
+
+
+def test_uninstall_toml_but_no_name(monkeypatch, tmp_path):
+    # if there's no static project name then continue on like normal
+    cmd = ["uninstall-dot", "uninstall", str(tmp_path)]
+    mock_exec = MagicMock()
+    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
+    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
+
+    with open(tmp_path / "pyproject.toml", mode="wb") as fobj:
+        fobj.write(
+            b"[build-system]\n"
+            b'requires = ["setuptools>=61.0"]\n'
+            b'build-backend = "setuptools.build_meta"\n'
+        )
+
+    uninstall_dot._main()
+    assert mock_exec.called
+    assert mock_exec.call_args == (("pip", ["pip", "uninstall", str(tmp_path)]),)

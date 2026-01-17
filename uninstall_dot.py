@@ -6,7 +6,6 @@ import tomllib
 from os import PathLike
 from os import execvp
 from pathlib import Path
-from typing import NoReturn
 
 
 def _looks_like_path(name: str) -> bool:
@@ -20,10 +19,10 @@ def _looks_like_path(name: str) -> bool:
 def _get_package_name(pyproject: PathLike) -> str | None:
     with open(pyproject, mode="rb") as fobj:
         pkg_data = tomllib.load(fobj)
-        return pkg_data["project"]["name"]
+    return pkg_data.get("project", {}).get("name", None)
 
 
-def _main() -> NoReturn:
+def _main():
 
     cmd = ["pip", *sys.argv[1:]]
 
