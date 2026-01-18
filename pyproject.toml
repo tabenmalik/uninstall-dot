@@ -32,7 +32,7 @@ Issues = "https://github.com/tabenmalik/uninstall-dot/issues"
 uninstall-dot = "uninstall_dot:_main"
 
 [tool.setuptools]
-py-modules = ["uninstall-dot"]
+py-modules = ["uninstall_dot"]
 
 [tool.coverage]
 paths.source = [

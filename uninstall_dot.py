@@ -44,6 +44,11 @@ def _main():
         if pyproject.exists():
             package = _get_package_name(pyproject)
             if package:
+                print(
+                    "pip uninstall does not like directory paths, "
+                    "but I looked up the project name for you!",
+                    file=sys.stderr,
+                )
                 cmd[-1] = package
 
     return execvp(cmd[0], cmd)
