@@ -52,15 +52,6 @@ plugins = [ "covdefaults" ]
 [tool.tox]
 env_list = [ "3.11", "3.12", "3.13", "3.14", "coverage" ]
 
-[tool.tox.env_run_base]
-description = "Run test under {base_python}"
-deps = [ "pytest", "coverage[toml]", "covdefaults" ]
-set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
-commands = [
-  [ "coverage", "erase" ],
-  [ "coverage", "run", "--module", "pytest", { replace = "posargs", extend = true } ],
-]
-
 [tool.tox.env.coverage]
 description = "Compile and report coverage"
 deps = [ "coverage[toml]", "covdefaults" ]
@@ -71,4 +62,12 @@ commands = [
   [ "coverage", "erase" ],
   [ "coverage", "combine", "--keep" ],
   [ "coverage", "report" ],
+]
+[tool.tox.env_run_base]
+description = "Run test under {base_python}"
+deps = [ "pytest", "coverage[toml]", "covdefaults" ]
+set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
+commands = [
+  [ "coverage", "erase" ],
+  [ "coverage", "run", "--module", "pytest", { replace = "posargs", extend = true } ],
 ]
