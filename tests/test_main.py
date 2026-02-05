@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import subprocess
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,77 +9,90 @@ import pytest
 import uninstall_dot
 
 
-def test_install():
+def test_cli_install():
     assert shutil.which("uninstall-dot") is not None
 
 
-@pytest.mark.parametrize(
-    "cmd",
-    [
-        ("pip", "uninstall", "numpy"),
-        ("uninstall-dot", "install", "numpy"),
-        ("pip", "help"),
-        ("hello", "freeze", "--all"),
-    ],
-)
-def test_passthrough(monkeypatch, cmd):
+@pytest.fixture
+def project(tmp_path):
+    package_dir = tmp_path / "src" / "foobar"
+    package_dir.mkdir(parents=True)
+    (package_dir / "__init__.py").touch()
+
+    main_file = package_dir / "__main__.py"
+    main_file.write_text("print('hello world!')\n")
+
+    return tmp_path
+
+
+@pytest.fixture
+def uninstall(monkeypatch):
     mock_exec = MagicMock()
-    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
-    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
-    uninstall_dot._main()
-    assert mock_exec.called
-    assert mock_exec.call_args == (("pip", ["pip", *cmd[1:]]),)
-
-
-def test_uninstall_no_toml(monkeypatch, tmp_path):
-    # directory path doesn't get converted to project name without a pyproject.toml
-    cmd = ["uninstall-dot", "uninstall", "."]
-    mock_exec = MagicMock()
-    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
-    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
-    monkeypatch.chdir(tmp_path)
-
-    uninstall_dot._main()
-    assert mock_exec.called
-    assert mock_exec.call_args == (("pip", ["pip", "uninstall", "."]),)
-
-
-def test_uninstall_with_toml(monkeypatch, tmp_path):
-    # look up project name in pyproject.toml
-    cmd = ["uninstall-dot", "uninstall", str(tmp_path)]
-    mock_exec = MagicMock()
-    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
     monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
 
-    with open(tmp_path / "pyproject.toml", mode="wb") as fobj:
-        fobj.write(
-            b"[build-system]\n"
-            b'requires = ["setuptools>=61.0"]\n'
-            b'build-backend = "setuptools.build_meta"\n'
-            b"\n"
-            b"[project]\n"
-            b'name = "fizzbuzz"\n'
-        )
+    def _non_exec_uninstall_dot(cmd):
+        monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
+        print(uninstall_dot.sys.argv)
+        uninstall_dot._main()
+        print(mock_exec.call_args)
+        return subprocess.run(mock_exec.call_args[0][1])
 
-    uninstall_dot._main()
-    assert mock_exec.called
-    assert mock_exec.call_args == (("pip", ["pip", "uninstall", "fizzbuzz"]),)
+    return _non_exec_uninstall_dot
 
 
-def test_uninstall_toml_but_no_name(monkeypatch, tmp_path):
-    # if there's no static project name then continue on like normal
-    cmd = ["uninstall-dot", "uninstall", str(tmp_path)]
-    mock_exec = MagicMock()
-    monkeypatch.setattr(uninstall_dot.sys, "argv", cmd)
-    monkeypatch.setattr(uninstall_dot, "execvp", mock_exec)
+def install(path):
+    _ = subprocess.run(["pip", "install", str(path)], check=True)
 
-    with open(tmp_path / "pyproject.toml", mode="wb") as fobj:
-        fobj.write(
-            b"[build-system]\n"
-            b'requires = ["setuptools>=61.0"]\n'
-            b'build-backend = "setuptools.build_meta"\n'
-        )
 
-    uninstall_dot._main()
-    assert mock_exec.called
-    assert mock_exec.call_args == (("pip", ["pip", "uninstall", str(tmp_path)]),)
+def test_passthrough(uninstall):
+    cp = uninstall(["uninstall_dot", "list"])
+    assert cp.returncode == 0
+    assert cp.args == ["pip", "list"]
+
+
+def test_nothing_to_uninstall(project, uninstall):
+    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode != 0
+
+
+def test_toml_project(project, uninstall):
+    pyproject = project / "pyproject.toml"
+    pyproject.write_text(
+        "[build-system]\n"
+        'requires = ["setuptools>=61.0"]\n'
+        'build-backend = "setuptools.build_meta"\n'
+        "\n"
+        "[project]\n"
+        'name = "fizzbuzz"\n'
+        'version = "1.0.0"\n'
+    )
+
+    install(project)
+    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode == 0
+
+
+def test_invalid_toml(project, uninstall):
+    pyproject = project / "pyproject.toml"
+    # missing project name!
+    pyproject.write_text(
+        "[build-system]\n"
+        'requires = ["setuptools>=61.0"]\n'
+        'build-backend = "setuptools.build_meta"\n'
+        "\n"
+        "[project]\n"
+        'version = "1.0.0"\n'
+    )
+    cp = uninstall(["uninstall_dot", "uninstall", "-y", str(project)])
+    assert cp.returncode != 0
+    assert cp.args[-1] == str(project)
+
+
+def test_setuppy_project(project, uninstall):
+    setuppy = project / "setup.py"
+    setuppy.write_text(
+        "from setuptools import setup\n"
+        "\n"
+        "setup(project='fizzbuzz', version='1.0.0')\n"
+    )
+
+    install(project)
+    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode != 0
