@@ -41,7 +41,7 @@ def uninstall(monkeypatch):
 
 
 def install(path):
-    _ = subprocess.run(["pip", "install", str(path)], check=True)
+    _ = subprocess.run(["pip", "install", "-vv", str(path)], check=True)
 
 
 def test_passthrough(uninstall):
