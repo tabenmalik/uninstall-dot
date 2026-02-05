@@ -3,8 +3,10 @@ from __future__ import annotations
 import importlib.metadata
 import os
 import sys
+from importlib.metadata import Distribution
 from os import PathLike
 from pathlib import Path
+from types import SimpleNamespace
 
 if sys.version_info >= (3, 11):  # pragma: >=3.11 cover
     from tomllib import load as toml_load
@@ -30,10 +32,25 @@ def _looks_like_path(name: str) -> bool:
     )
 
 
+def _dist_origin(dist: Distribution) -> SimpleNamespace | None:
+    if sys.version_info >= (3, 13):  # pragma: >=3.13 cover
+        return dist.origin
+    else:  # pragma: <3.13 cover
+        # backport-ish from stdlib
+        import json
+
+        text = dist.read_text("direct_url.json")
+        origin = None
+        if text is not None:
+            origin = json.loads(text, object_hook=lambda data: SimpleNamespace(**data))
+        return origin
+
+
 def _dist_package_name(url: str) -> str | None:
     """return package name if a distribution's origin matches the url"""
     for dist in importlib.metadata.distributions():
-        if dist.origin is not None and dist.origin.url == url:
+        origin = _dist_origin(dist)
+        if origin is not None and origin.url == url:
             return dist.name
     return None
 
