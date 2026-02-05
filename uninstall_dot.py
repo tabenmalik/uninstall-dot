@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.metadata
 import os
 import sys
 from os import PathLike
@@ -29,7 +30,15 @@ def _looks_like_path(name: str) -> bool:
     )
 
 
-def _get_package_name(pyproject: PathLike) -> str | None:
+def _dist_package_name(url: str) -> str | None:
+    """return package name if a distribution's origin matches the url"""
+    for dist in importlib.metadata.distributions():
+        if dist.origin is not None and dist.origin.url == url:
+            return dist.name
+    return None
+
+
+def _pyproject_package_name(pyproject: PathLike) -> str | None:
     with open(pyproject, mode="rb") as fobj:
         pkg_data = toml_load(fobj)
     return pkg_data.get("project", {}).get("name", None)
@@ -40,15 +49,19 @@ def _main():
     cmd = ["pip", *sys.argv[1:]]
 
     if "uninstall" in cmd and _looks_like_path(cmd[-1]):
+        absolute_url = f"file://{os.path.abspath(cmd[-1])}"
+        package = _dist_package_name(absolute_url)
+
         pyproject = Path(cmd[-1]) / "pyproject.toml"
-        if pyproject.exists():
-            package = _get_package_name(pyproject)
-            if package:
-                print(
-                    "pip uninstall does not like directory paths, "
-                    "but I looked up the project name for you!",
-                    file=sys.stderr,
-                )
-                cmd[-1] = package
+        if not package and pyproject.exists():
+            package = _pyproject_package_name(pyproject)
+
+        if package:
+            print(
+                "pip uninstall does not like directory paths, "
+                "but I looked up the project name for you!",
+                file=sys.stderr,
+            )
+            cmd[-1] = package
 
     return execvp(cmd[0], cmd)
