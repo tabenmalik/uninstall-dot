@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: install dev tools
-        run: pip install --upgrade tox virtualenv setuptools pip
+        run: python -m pip install --upgrade tox virtualenv setuptools pip
       - name: set env
         run: echo "COVERAGE_FILE=.coverage.${{ matrix.os }}.${{ matrix.python-version }}" >> "$GITHUB_ENV"
         if: runner.os != 'Windows'
