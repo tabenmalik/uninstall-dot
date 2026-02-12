@@ -27,7 +27,6 @@ classifiers = [
 dependencies = [
   "tomli; python_version<'3.11'",
 ]
-
 urls.Homepage = "https://github.com/tabenmalik/uninstall-dot"
 urls.Issues = "https://github.com/tabenmalik/uninstall-dot/issues"
 scripts.uninstall-dot = "uninstall_dot:_main"
@@ -36,6 +35,8 @@ scripts.uninstall-dot = "uninstall_dot:_main"
 py-modules = [ "uninstall_dot" ]
 
 [tool.coverage]
+run.plugins = [ "covdefaults" ]
+run.relative_files = true
 paths.source = [
   ".",
   ".tox*/*/lib/python*/site-packages",
@@ -45,29 +46,22 @@ paths.source = [
   "*\\src",
 ]
 
-[tool.coverage.run]
-relative_files = true
-plugins = [ "covdefaults" ]
-
 [tool.tox]
 env_list = [ "3.11", "3.12", "3.13", "3.14", "coverage" ]
-
-[tool.tox.env.coverage]
-description = "Compile and report coverage"
-deps = [ "coverage[toml]", "covdefaults" ]
-depends = [ "3.11", "3.12", "3.13", "3.14" ]
-skip_intsall = true
-set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage}" }
-commands = [
+env.coverage.description = "Compile and report coverage"
+env.coverage.deps = [ "coverage[toml]", "covdefaults" ]
+env.coverage.depends = [ "3.11", "3.12", "3.13", "3.14" ]
+env.coverage.skip_intsall = true
+env.coverage.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage}" }
+env.coverage.commands = [
   [ "coverage", "erase" ],
   [ "coverage", "combine", "--keep" ],
   [ "coverage", "report" ],
 ]
-[tool.tox.env_run_base]
-description = "Run test under {base_python}"
-deps = [ "pytest", "coverage[toml]", "covdefaults" ]
-set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
-commands = [
+env_run_base.description = "Run test under {base_python}"
+env_run_base.deps = [ "pytest", "coverage[toml]", "covdefaults" ]
+env_run_base.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
+env_run_base.commands = [
   [ "coverage", "erase" ],
   [ "coverage", "run", "--module", "pytest", { replace = "posargs", extend = true } ],
 ]
