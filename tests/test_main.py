@@ -67,7 +67,9 @@ def test_toml_project(project, uninstall):
     )
 
     install(project)
-    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode == 0
+    cp = uninstall(["uninstall_dot", "uninstall", "-y", str(project)])
+    assert cp.returncode == 0
+    assert cp.args[-1] == "fizzbuzz"
 
 
 def test_invalid_toml(project, uninstall):
@@ -91,8 +93,10 @@ def test_setuppy_project(project, uninstall):
     setuppy.write_text(
         "from setuptools import setup\n"
         "\n"
-        "setup(project='fizzbuzz', version='1.0.0')\n"
+        "setup(name='fizzbuzz', version='1.0.0')\n"
     )
 
     install(project)
-    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode != 0
+    cp = uninstall(["uninstall_dot", "uninstall", "-y", str(project)])
+    assert cp.returncode == 0
+    assert cp.args[-1] == "fizzbuzz"
