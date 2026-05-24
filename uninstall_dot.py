@@ -55,18 +55,18 @@ def _dist_package_name(url: str) -> str | None:
     return None
 
 
-def _pyproject_package_name(pyproject: PathLike) -> str | None:
+def _pyproject_package_name(pyproject: PathLike[str]) -> str | None:
     with open(pyproject, mode="rb") as fobj:
         pkg_data = toml_load(fobj)
     return pkg_data.get("project", {}).get("name", None)
 
 
-def _path_resolve(p: PathLike) -> Path:
+def _path_resolve(p: PathLike[str] | str) -> Path:
     # backporting py3.14 behavior
     return Path(os.path.realpath(p))
 
 
-def _main():
+def _main() -> int:
 
     cmd = ["pip", *sys.argv[1:]]
 
