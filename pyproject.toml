@@ -35,9 +35,9 @@ scripts.uninstall-dot = "uninstall_dot:_main"
 py-modules = [ "uninstall_dot" ]
 
 [tool.mypy]
-check_untyped_defs = true
 disallow_any_generics = true
 disallow_untyped_defs = true
+check_untyped_defs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 overrides = [ { module = "tests.*", disallow_untyped_defs = false } ]
@@ -55,21 +55,21 @@ paths.source = [
 ]
 
 [tool.tox]
-env_list = [ "3.11", "3.12", "3.13", "3.14", "coverage" ]
-env.coverage.description = "Compile and report coverage"
-env.coverage.deps = [ "coverage[toml]", "covdefaults" ]
-env.coverage.depends = [ "3.11", "3.12", "3.13", "3.14" ]
-env.coverage.skip_intsall = true
-env.coverage.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage}" }
+env_list = [ "3.14", "3.13", "3.12", "3.11", "coverage" ]
 env.coverage.commands = [
   [ "coverage", "erase" ],
   [ "coverage", "combine", "--keep" ],
   [ "coverage", "report" ],
 ]
-env_run_base.description = "Run test under {base_python}"
-env_run_base.deps = [ "pytest", "coverage[toml]", "covdefaults" ]
-env_run_base.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
+env.coverage.depends = [ "3.11", "3.12", "3.13", "3.14" ]
+env.coverage.deps = [ "coverage[toml]", "covdefaults" ]
+env.coverage.description = "Compile and report coverage"
+env.coverage.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage}" }
+env.coverage.skip_intsall = true
 env_run_base.commands = [
   [ "coverage", "erase" ],
   [ "coverage", "run", "--module", "pytest", { replace = "posargs", extend = true } ],
 ]
+env_run_base.deps = [ "pytest", "coverage[toml]", "covdefaults" ]
+env_run_base.description = "Run test under {base_python}"
+env_run_base.set_env = { COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}" }
