@@ -51,7 +51,9 @@ def test_passthrough(uninstall):
 
 
 def test_nothing_to_uninstall(project, uninstall):
-    assert uninstall(["uninstall_dot", "uninstall", "-y", str(project)]).returncode != 0
+    assert 0 != uninstall(
+        ["uninstall_dot", "uninstall", "-y", str(project)],
+    ).returncode
 
 
 def test_toml_project(project, uninstall):
@@ -63,7 +65,7 @@ def test_toml_project(project, uninstall):
         "\n"
         "[project]\n"
         'name = "fizzbuzz"\n'
-        'version = "1.0.0"\n'
+        'version = "1.0.0"\n',
     )
 
     install(project)
@@ -81,7 +83,7 @@ def test_invalid_toml(project, uninstall):
         'build-backend = "setuptools.build_meta"\n'
         "\n"
         "[project]\n"
-        'version = "1.0.0"\n'
+        'version = "1.0.0"\n',
     )
     cp = uninstall(["uninstall_dot", "uninstall", "-y", str(project)])
     assert cp.returncode != 0
@@ -93,7 +95,7 @@ def test_setuppy_project(project, uninstall):
     setuppy.write_text(
         "from setuptools import setup\n"
         "\n"
-        "setup(name='fizzbuzz', version='1.0.0')\n"
+        "setup(name='fizzbuzz', version='1.0.0')\n",
     )
 
     install(project)
