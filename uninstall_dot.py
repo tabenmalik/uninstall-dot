@@ -42,7 +42,9 @@ def _dist_origin(dist: Distribution) -> SimpleNamespace | None:
         text = dist.read_text("direct_url.json")
         origin = None
         if text is not None:
-            origin = json.loads(text, object_hook=lambda data: SimpleNamespace(**data))
+            origin = json.loads(
+                text, object_hook=lambda data: SimpleNamespace(**data),
+            )
         return origin
 
 
