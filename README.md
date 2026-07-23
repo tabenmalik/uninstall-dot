@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/tabenmalik/uninstall-dot/main.svg)](https://results.pre-commit.ci/latest/github/tabenmalik/uninstall-dot/main)
+
 # uninstall-dot
 
 Uninstall local projects by directory.
