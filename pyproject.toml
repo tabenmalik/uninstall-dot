@@ -37,6 +37,7 @@ py-modules = [ "uninstall_dot" ]
 [tool.mypy]
 disallow_any_generics = true
 disallow_untyped_defs = true
+disallow_incomplete_defs = true
 check_untyped_defs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
