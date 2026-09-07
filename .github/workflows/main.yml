@@ -2,52 +2,18 @@ name: main
 
 on:
   push:
-    branches: 'main'
+    branches: [main, test-me-*]
     tags: '*'
   pull_request:
 
-
 jobs:
-  test:
-    strategy:
-      matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: install dev tools
-        run: python -m pip install --upgrade tox virtualenv setuptools pip
-      - name: set env
-        run: echo "COVERAGE_FILE=.coverage.${{ matrix.os }}.${{ matrix.python-version }}" >> "$GITHUB_ENV"
-        if: runner.os != 'Windows'
-      - name: set env on Windows
-        run: echo "COVERAGE_FILE=.coverage.${{ matrix.os }}.${{ matrix.python-version }}" | Out-File -FilePath $env:GITHUB_ENV
-        if: runner.os == 'Windows'
-      - name: run tests
-        run: tox run -e py
-      - uses: actions/upload-artifact@v6
-        with:
-          name: .coverage.${{ matrix.os }}-${{ matrix.python-version }}
-          path: .coverage.*
-          if-no-files-found: error
-          include-hidden-files: true
-  coverage:
-    if: ${{ always() }}
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-      - name: install coverage
-        run: pip install --upgrade tox virtualenv setuptools pip
-      - uses: actions/download-artifact@v7
-        with:
-          path: .tox/
-          pattern: .coverage.*
-          merge-multiple: true
-      - name: coverage report
-        run: tox run -e coverage
+  main-ubuntu:
+    uses: asottile/workflows/.github/workflows/tox.yml@v1.11.1
+    with:
+      env: '["py310", "py311", "py312", "py313", "py314"]'
+      os: ubuntu-latest
+  main-windows:
+    uses: asottile/workflows/.github/workflows/tox.yml@v1.11.1
+    with:
+      env: '["py310"]'
+      os: windows-latest
