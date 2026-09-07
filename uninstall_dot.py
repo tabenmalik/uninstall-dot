@@ -7,6 +7,7 @@ from importlib.metadata import Distribution
 from os import PathLike
 from pathlib import Path
 from types import SimpleNamespace
+from typing import NoReturn
 
 if sys.version_info >= (3, 11):  # pragma: >=3.11 cover
     from tomllib import load as toml_load
@@ -17,7 +18,11 @@ else:  # pragma: <3.11 cover
 if sys.platform == "win32":  # pragma: win32 cover
     import subprocess
 
-    def execvp(file: str, args: list[str], /) -> int:
+    def execvp(
+        file: str,
+        args: list[str],
+        /,
+    ) -> int:  # pragma: no cover (windows)
         return subprocess.run(args).returncode
 
 else:  # pragma: win32 no cover
@@ -68,7 +73,7 @@ def _path_resolve(p: PathLike[str] | str) -> Path:
     return Path(os.path.realpath(p))
 
 
-def _main() -> int:
+def _main() -> int | NoReturn:
 
     cmd = ["pip", *sys.argv[1:]]
 
