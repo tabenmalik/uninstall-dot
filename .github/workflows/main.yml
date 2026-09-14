@@ -10,7 +10,7 @@ jobs:
   main-ubuntu:
     uses: asottile/workflows/.github/workflows/tox.yml@v1.11.1
     with:
-      env: '["py310", "py311", "py312", "py313", "py314"]'
+      env: '["py310", "py311", "py312", "py313", "py314", "py315"]'
       os: ubuntu-latest
   main-windows:
     uses: asottile/workflows/.github/workflows/tox.yml@v1.11.1
