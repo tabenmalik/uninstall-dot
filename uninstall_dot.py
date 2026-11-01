@@ -3,16 +3,12 @@ from __future__ import annotations
 import importlib.metadata
 import os
 import sys
+import tomllib
 from importlib.metadata import Distribution
 from os import PathLike
 from pathlib import Path
 from types import SimpleNamespace
 from typing import NoReturn
-
-if sys.version_info >= (3, 11):  # pragma: >=3.11 cover
-    from tomllib import load as toml_load
-else:  # pragma: <3.11 cover
-    from tomli import load as toml_load
 
 
 if sys.platform == "win32":  # pragma: win32 cover
@@ -64,7 +60,7 @@ def _dist_package_name(url: str) -> str | None:
 
 def _pyproject_package_name(pyproject: PathLike[str]) -> str | None:
     with open(pyproject, mode="rb") as fobj:
-        pkg_data = toml_load(fobj)
+        pkg_data = tomllib.load(fobj)
     return pkg_data.get("project", {}).get("name", None)
 
 
