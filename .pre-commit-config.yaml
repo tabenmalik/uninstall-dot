@@ -9,6 +9,7 @@ repos:
     rev: v2.30.3
     hooks:
     -   id: pyproject-fmt
+        args: [--no-generate-python-version-classifiers]
 -   repo: https://github.com/asottile/reorder-python-imports
     rev: v3.19.0
     hooks:
