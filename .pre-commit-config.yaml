@@ -10,7 +10,7 @@ repos:
     -   id: trailing-whitespace
     -   id: check-yaml
 -   repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.30.6
+    rev: v2.31.2
     hooks:
     -   id: pyproject-fmt
         args: [--no-generate-python-version-classifiers]
